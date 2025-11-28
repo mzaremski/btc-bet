@@ -49,7 +49,7 @@ const createGuessBaseHandler = async (event: APIGatewayProxyEventV2) => {
   const queryResult = await database.send(
     new QueryCommand({
       TableName: tableName,
-      KeyConditionExpression: 'user_id = :userId',
+      KeyConditionExpression: 'userId = :userId',
       ExpressionAttributeValues: {
         ':userId': userId,
       },

@@ -17,6 +17,8 @@ const schema = a.schema({
       checkTimestamp: a.string(), // TODO: It should not be a verb
       scoreChange: a.integer(),
       totalScore: a.integer(),
+      createdAt: a.string().required().default(a.datetime()),
+      updatedAt: a.string().required().default(a.datetime()),
     })
     .identifier(['userId', 'timestamp'])
     .authorization(allow => [
