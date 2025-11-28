@@ -8,12 +8,21 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "vitest"
   },
   "dependencies": {
+    "@middy/core": "^6.4.5",
+    "@middy/http-cors": "^6.4.5",
+    "@middy/http-event-normalizer": "^6.4.5",
+    "@middy/http-header-normalizer": "^6.4.5",
+    "@middy/http-urlencode-body-parser": "^6.4.5",
+    "@middy/input-output-logger": "^6.4.5",
     "aws-amplify": "^6.15.8",
     "react": "^19.2.0",
-    "react-dom": "^19.2.0"
+    "react-dom": "^19.2.0",
+    "vitest": "^4.0.14",
+    "zod": "^4.1.13"
   },
   "devDependencies": {
     "@aws-amplify/backend": "^1.18.0",

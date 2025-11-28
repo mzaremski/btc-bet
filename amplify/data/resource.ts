@@ -13,8 +13,8 @@ const schema = a.schema({
       userId: a.string().required(),
       timestamp: a.string().required(),
       isVoteUp: a.boolean().required(),
-      checkDelaySeconds: a.integer().required(),
-      checkTimestamp: a.string(),
+      checkDelaySeconds: a.integer().required(), // TODO: It should not be a verb
+      checkTimestamp: a.string(), // TODO: It should not be a verb
       scoreChange: a.integer(),
       totalScore: a.integer(),
     })
