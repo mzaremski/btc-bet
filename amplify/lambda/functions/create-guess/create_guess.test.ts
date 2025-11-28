@@ -18,7 +18,8 @@ describe('create-guess handler', () => {
     mockSend.mockClear();
     vi.clearAllMocks();
   });
-  it('should return 200', async () => {
+
+  it('should return 201', async () => {
     const result = await handler(
       createBaseEvent('isVoteUp=true') as any, // For some reason middy throws type error here
       {} as any,
@@ -26,7 +27,7 @@ describe('create-guess handler', () => {
     );
 
     expect(result).toMatchObject({
-      statusCode: 200,
+      statusCode: 201,
       headers: {
         'Content-Type': 'application/json',
       },
@@ -54,9 +55,17 @@ describe('create-guess handler', () => {
 
     process.env.TABLE_NAME = mockTableName;
 
-    mockSend.mockResolvedValue({
-      Items: [],
-      Count: 0,
+    mockSend.mockResolvedValueOnce({
+      Items: [
+        {
+          userId: testUserId,
+          timestamp: new Date().toISOString(),
+          isVoteUp: true,
+          checkDelaySeconds: 60,
+          totalScore: 0,
+        },
+      ], // Item existing, but no checkTimestamp means the guess is in progress
+      Count: 1,
     });
 
     const result = await handler(
@@ -65,14 +74,14 @@ describe('create-guess handler', () => {
       (() => {}) as any
     );
 
-    expect(mockSend).toHaveBeenCalledTimes(1);
+    expect(mockSend).toHaveBeenCalled();
 
     const queryCommand = mockSend.mock.calls[0][0];
     expect(queryCommand.input.ExpressionAttributeValues[':userId']).toBe(
       testUserId
     );
     expect(result).toMatchObject({
-      statusCode: 200,
+      statusCode: 409,
     });
   });
 });

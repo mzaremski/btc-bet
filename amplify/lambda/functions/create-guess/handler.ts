@@ -61,8 +61,8 @@ const createGuessBaseHandler = async (event: APIGatewayProxyEventV2) => {
   console.log('[create-guess] queryResult:', queryResult);
 
   const isGuessInProgress =
-    queryResult.Items &&
-    queryResult.Items.length > 0 &&
+    queryResult?.Items &&
+    queryResult?.Items.length > 0 &&
     !queryResult.Items[0].checkTimestamp;
 
   if (isGuessInProgress) {
@@ -80,7 +80,7 @@ const createGuessBaseHandler = async (event: APIGatewayProxyEventV2) => {
   // - checkDelaySeconds = 60  (default, defined in the backend)
   // - totalScore
 
-  await database.send(
+  const putResult = await database.send(
     new PutCommand({
       TableName: tableName,
       Item: {
@@ -93,9 +93,11 @@ const createGuessBaseHandler = async (event: APIGatewayProxyEventV2) => {
     })
   );
 
+  console.log('[create-guess] putResult:', putResult);
+
   // Response to the user with succcess
 
-  return createResponse(200, { message: 'Hello, world!' });
+  return createResponse(201, { message: 'Hello, world!' });
 };
 
 export const handler = middy(createGuessBaseHandler)
