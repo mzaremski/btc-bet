@@ -38,6 +38,7 @@ const getLatestGuessLambda = backend.getLatestGuessFunction.resources
 const guessTable = backend.data.resources.tables['Guess'];
 createGuessLambda.addEnvironment('TABLE_NAME', guessTable.tableName);
 getLatestGuessLambda.addEnvironment('TABLE_NAME', guessTable.tableName);
+// TODO: The table name should be rather GUESS_TABLE_NAME
 
 // DynamoDB permissions
 const attachDynamoDBPolicy = (lambda: LambdaFunction, policyName: string) => {

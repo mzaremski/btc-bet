@@ -1,12 +1,15 @@
 import { APIGatewayProxyEventV2 } from 'aws-lambda';
 
-export function createBaseEvent(body: string) {
+export function createBaseEvent(
+  body: string,
+  userId = '550e8400-e29b-41d4-a716-446655440000'
+) {
   const base64Body = Buffer.from(body).toString('base64');
 
   const baseEvent: APIGatewayProxyEventV2 = {
     version: '2.0',
     routeKey: 'POST /users/{userId}/guesses',
-    rawPath: '/users/user-1/guesses',
+    rawPath: `/users/${userId}/guesses`,
     rawQueryString: '',
     headers: {
       accept: '*/*',
@@ -29,7 +32,7 @@ export function createBaseEvent(body: string) {
       domainPrefix: '0i0yxzi3vl',
       http: {
         method: 'POST',
-        path: '/users/user-1/guesses',
+        path: `/users/${userId}/guesses`,
         protocol: 'HTTP/1.1',
         sourceIp: '11.11.111.111', // eslint-disable-line sonarjs/no-hardcoded-ip
         userAgent: 'Something/1.11.1',
@@ -40,7 +43,7 @@ export function createBaseEvent(body: string) {
       time: '27/Nov/2025:16:34:45 +0000',
       timeEpoch: 1_764_261_285_976,
     },
-    pathParameters: { userId: 'user-1' },
+    pathParameters: { userId },
     body: base64Body,
     isBase64Encoded: true,
   };
