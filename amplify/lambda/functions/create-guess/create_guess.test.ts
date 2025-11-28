@@ -59,7 +59,7 @@ describe('create-guess handler', () => {
       Items: [
         {
           userId: testUserId,
-          timestamp: new Date().toISOString(),
+          timestamp: Date.now().toString(),
           isVoteUp: true,
           checkDelaySeconds: 60,
           totalScore: 0,
@@ -97,11 +97,11 @@ describe('create-guess handler', () => {
       Items: [
         {
           userId: testUserId,
-          timestamp: new Date().toISOString(),
+          timestamp: Date.now().toString(),
           isVoteUp: true,
           checkDelaySeconds: 60,
           totalScore: previousTotalScore,
-          checkTimestamp: new Date().toISOString(), // This means the guess is done
+          checkTimestamp: Date.now().toString(), // This means the guess is done
         },
       ],
       Count: 1,

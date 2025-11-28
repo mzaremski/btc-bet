@@ -2,7 +2,7 @@ import { createResponse } from '../../utils/create_response';
 import { throwApiError } from '../../utils/errors';
 import { database } from '../../utils/database';
 import middy from '@middy/core';
-import { QueryCommand, PutCommand } from '@aws-sdk/lib-dynamodb';
+import { PutCommand } from '@aws-sdk/lib-dynamodb';
 import inputOutputLogger from '@middy/input-output-logger';
 import httpEventNormalizer from '@middy/http-event-normalizer';
 import httpHeaderNormalizer from '@middy/http-header-normalizer';
@@ -10,6 +10,7 @@ import httpUrlencodeBodyParser from '@middy/http-urlencode-body-parser';
 import httpCors from '@middy/http-cors';
 import { APIGatewayProxyEventV2 } from 'aws-lambda';
 import { z } from 'zod';
+import { queryGetLatestGuessItem } from '../../utils/queries';
 
 const CHECK_DELAY_SECONDS = 60;
 
@@ -46,19 +47,7 @@ const createGuessBaseHandler = async (event: APIGatewayProxyEventV2) => {
   // Query DynamoDB for the last user's guess.
   // Check if the Guess Item has checkTimestamp filled. Return 409 if true.
   // Query for the latest guess for this user
-  const queryResult = await database.send(
-    new QueryCommand({
-      TableName: tableName,
-      KeyConditionExpression: 'userId = :userId',
-      ExpressionAttributeValues: {
-        ':userId': userId,
-      },
-      ScanIndexForward: false, // Get most recent first
-      Limit: 1,
-    })
-  );
-
-  const guessItem = queryResult?.Items?.[0];
+  const guessItem = await queryGetLatestGuessItem(userId);
   const isGuessInProgress = guessItem && !guessItem.checkTimestamp;
 
   if (isGuessInProgress) {
@@ -76,7 +65,8 @@ const createGuessBaseHandler = async (event: APIGatewayProxyEventV2) => {
   // - checkDelaySeconds = 60  (default, defined in the backend)
   // - totalScore
 
-  const currentTimestamp = Date.now(); // TODO: Think where should be this timestamp generated
+  // TODO: Think where should be this timestamp generated
+  const currentTimestamp = Date.now();
   const totalScore = guessItem?.totalScore || 0;
 
   // TODO: later in the user response should be used data from the database.send result
@@ -85,7 +75,7 @@ const createGuessBaseHandler = async (event: APIGatewayProxyEventV2) => {
       TableName: tableName,
       Item: {
         userId,
-        timestamp: currentTimestamp,
+        timestamp: currentTimestamp.toString(),
         isVoteUp,
         checkDelaySeconds: CHECK_DELAY_SECONDS,
         totalScore: totalScore,
@@ -95,7 +85,7 @@ const createGuessBaseHandler = async (event: APIGatewayProxyEventV2) => {
 
   // Response to the user
   return createResponse(201, {
-    timestamp: currentTimestamp,
+    timestamp: currentTimestamp.toString(),
     checkDelaySeconds: CHECK_DELAY_SECONDS,
     totalScore: totalScore,
   });
