@@ -1,0 +1,42 @@
+---
+description: TypeScript coding standards and best practices
+globs: ["**/*.ts", "**/*.tsx"]
+alwaysApply: true
+---
+
+# Coding Standards
+
+## Testing
+- Write happy path test for the functionality you are building
+
+## Utility Functions
+- Make sure there is no similar/the same code in the project. Reuse the code if exists.
+- If you write code that can be extracted to a util function, extract it.
+
+## Control Flow
+- Reduce using `for` loops. Use array iterators instead.
+- Reduce using `if` or `switch-case` statements, use `ts-pattern` instead.
+- Use early returns to limit `if` statements.
+- Use `ts-pattern` wherever possible.
+
+## TypeScript Best Practices
+- Prefer union instead of enum types.
+- Don't use `var`. Always prefer `const` over `let`.
+
+## Error Handling
+- Never leave `catch` blocks empty.
+
+## Function Design
+- Prefer pure functions, no side effects if possible.
+- Each function should do one thing only. If a function name contains "and" or has multiple responsibilities, split it into separate functions.
+
+## Code Quality
+- Don't remove any already existing comment, console.log.
+- Don't change any already existing string in the code.
+- Extract all magic numbers and strings to named constants at the top of the file or in a separate constants file with descriptive names.
+
+## Dependencies
+- Avoid hardcoded dependencies. Pass dependencies as parameters or use dependency injection.
+
+## Async Operations
+- Don't use Promise.all. Use pMap (p-map npm package) instead.
