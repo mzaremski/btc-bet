@@ -18,21 +18,22 @@ const schema = a.schema({
       scoreChange: a.integer(),
       totalScore: a.integer(),
     })
-    .identifier(["userId", "timestamp"])
-    .authorization((allow) => [allow.publicApiKey().to(["read", "create", "update"])]),
+    .identifier(['userId', 'timestamp'])
+    .authorization(allow => [
+      allow.publicApiKey().to(['read', 'create', 'update']),
+    ]),
 });
 
 export const data = defineData({
   schema,
   authorizationModes: {
     // TODO: Remove the apiKey access. Let only the lambda to use the DynamoDB
-    defaultAuthorizationMode: "apiKey",
+    defaultAuthorizationMode: 'apiKey',
     apiKeyAuthorizationMode: {
       expiresInDays: 30,
     },
   },
 });
-
 
 /*== STEP 2 ===============================================================
 Go to your frontend source code. From your client-side code, generate a
