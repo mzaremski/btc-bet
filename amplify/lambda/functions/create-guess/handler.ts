@@ -11,9 +11,9 @@ import httpCors from '@middy/http-cors';
 import { APIGatewayProxyEventV2 } from 'aws-lambda';
 import { z } from 'zod';
 
-const createGuessBaseHandler = async (event: APIGatewayProxyEventV2) => {
-  console.log('[create-guess] ENTIRE EVENT:', event);
+const CHECK_DELAY_SECONDS = 60;
 
+const createGuessBaseHandler = async (event: APIGatewayProxyEventV2) => {
   // Validate body (are user_id and is_vote_up exist) with zod
   const pathParametersValidationResult = z
     .object({
@@ -39,7 +39,7 @@ const createGuessBaseHandler = async (event: APIGatewayProxyEventV2) => {
   }
 
   const { userId } = pathParametersValidationResult.data!;
-  // const { isVoteUp } = bodyValidationResult.data!;
+  const { isVoteUp } = bodyValidationResult.data!;
   const tableName = process.env.TABLE_NAME as string;
 
   // Check if the user already has unresolved guess
@@ -58,12 +58,8 @@ const createGuessBaseHandler = async (event: APIGatewayProxyEventV2) => {
     })
   );
 
-  console.log('[create-guess] queryResult:', queryResult);
-
-  const isGuessInProgress =
-    queryResult?.Items &&
-    queryResult?.Items.length > 0 &&
-    !queryResult.Items[0].checkTimestamp;
+  const guessItem = queryResult?.Items?.[0];
+  const isGuessInProgress = guessItem && !guessItem.checkTimestamp;
 
   if (isGuessInProgress) {
     return createResponse(409, {
@@ -80,24 +76,29 @@ const createGuessBaseHandler = async (event: APIGatewayProxyEventV2) => {
   // - checkDelaySeconds = 60  (default, defined in the backend)
   // - totalScore
 
-  const putResult = await database.send(
+  const currentTimestamp = Date.now(); // TODO: Think where should be this timestamp generated
+  const totalScore = guessItem?.totalScore || 0;
+
+  // TODO: later in the user response should be used data from the database.send result
+  await database.send(
     new PutCommand({
       TableName: tableName,
       Item: {
         userId,
-        timestamp: new Date().toISOString(),
-        isVoteUp: true,
-        checkDelaySeconds: 60,
-        totalScore: 0,
+        timestamp: currentTimestamp,
+        isVoteUp,
+        checkDelaySeconds: CHECK_DELAY_SECONDS,
+        totalScore: totalScore,
       },
     })
   );
 
-  console.log('[create-guess] putResult:', putResult);
-
-  // Response to the user with succcess
-
-  return createResponse(201, { message: 'Hello, world!' });
+  // Response to the user
+  return createResponse(201, {
+    timestamp: currentTimestamp,
+    checkDelaySeconds: CHECK_DELAY_SECONDS,
+    totalScore: totalScore,
+  });
 };
 
 export const handler = middy(createGuessBaseHandler)
