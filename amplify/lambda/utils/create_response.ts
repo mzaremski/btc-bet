@@ -2,7 +2,7 @@ import { APIGatewayProxyResultV2 } from 'aws-lambda';
 
 export const createResponse = (
   statusCode: number,
-  body: string,
+  body: Record<string, any>,
   additionalHeaders: Record<string, string> = {}
 ): APIGatewayProxyResultV2 => ({
   statusCode,
@@ -10,5 +10,5 @@ export const createResponse = (
     'Content-Type': 'application/json',
     ...additionalHeaders,
   },
-  body,
+  body: JSON.stringify(body),
 });

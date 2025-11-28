@@ -19,5 +19,5 @@ export const handler = async event => {
    */
 
   // Response to the user with the Guess item.
-  return createResponse(200, JSON.stringify({ message: 'Hello, world!' }));
+  return createResponse(200, { message: 'Hello, world!' });
 };
