@@ -2,7 +2,7 @@ import { createResponse } from '../../utils/create_response';
 import { throwApiError } from '../../utils/errors';
 import { database } from '../../utils/database';
 import middy from '@middy/core';
-import { QueryCommand } from '@aws-sdk/lib-dynamodb';
+import { QueryCommand, PutCommand } from '@aws-sdk/lib-dynamodb';
 import inputOutputLogger from '@middy/input-output-logger';
 import httpEventNormalizer from '@middy/http-event-normalizer';
 import httpHeaderNormalizer from '@middy/http-header-normalizer';
@@ -60,6 +60,18 @@ const createGuessBaseHandler = async (event: APIGatewayProxyEventV2) => {
 
   console.log('[create-guess] queryResult:', queryResult);
 
+  const isGuessInProgress =
+    queryResult.Items &&
+    queryResult.Items.length > 0 &&
+    !queryResult.Items[0].checkTimestamp;
+
+  if (isGuessInProgress) {
+    return createResponse(409, {
+      error:
+        'A guess is already in progress. Please wait for it to be checked.',
+    });
+  }
+
   // If user has Guess Item without checkTimestamp. Save the Guess item to the database:
   // Save:
   // - userId
@@ -67,6 +79,19 @@ const createGuessBaseHandler = async (event: APIGatewayProxyEventV2) => {
   // - isVoteUp
   // - checkDelaySeconds = 60  (default, defined in the backend)
   // - totalScore
+
+  await database.send(
+    new PutCommand({
+      TableName: tableName,
+      Item: {
+        userId,
+        timestamp: new Date().toISOString(),
+        isVoteUp: true,
+        checkDelaySeconds: 60,
+        totalScore: 0,
+      },
+    })
+  );
 
   // Response to the user with succcess
 
