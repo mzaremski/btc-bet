@@ -44,4 +44,3 @@ export async function getLatestGuess(userId: string) {
 
   return response.json();
 }
-

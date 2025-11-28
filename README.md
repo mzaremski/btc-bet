@@ -14,7 +14,7 @@ Live website: https://main.d2x6l2oidilxch.amplifyapp.com/
 
 ## Stack
 
-- FrontEnd: React, Vite, (vibecoded)
+- FrontEnd: React, Vite
 - Backend: Lambda
 - Database: DynamoDB
 
@@ -22,6 +22,7 @@ Live website: https://main.d2x6l2oidilxch.amplifyapp.com/
 
 - I decided the app is just a "fun game". No "trading system".
 - To not make the solution unnecessarily complex by using EventBridge scheduler or SQS delay. As well as I didn't want to make it too naive by using runtime timers, I decided to create Lambdas which also make the solution cheap. The solution on Lambdas is also simple to maintain and deploy as it just needs AWS services (Amplify with backend).
+- The front end is "vibecoded" 
 
 ## How the App Works from the User Perspective
 

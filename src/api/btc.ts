@@ -5,4 +5,3 @@ export async function fetchBtcPrice(): Promise<number> {
   const data = await response.json();
   return Number.parseFloat(data.price);
 }
-

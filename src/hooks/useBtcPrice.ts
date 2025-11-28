@@ -21,4 +21,3 @@ export function useBtcPrice() {
 
   return btcPrice;
 }
-

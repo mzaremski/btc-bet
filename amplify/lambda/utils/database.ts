@@ -3,4 +3,3 @@ import { DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb';
 
 const dynamoClient = new DynamoDBClient({});
 export const database = DynamoDBDocumentClient.from(dynamoClient);
-

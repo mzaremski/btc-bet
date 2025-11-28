@@ -1,13 +1,14 @@
 import { useCallback, useRef } from 'react';
+import type { Dispatch, SetStateAction } from 'react';
 import { calculateCheckTime, calculateRemainingSeconds } from '../utils/time';
 import { checkGuessStatus } from '../utils/guesses';
 
-interface UseGuessSchedulerOptions {
+type UseGuessSchedulerOptions = {
   userId: string;
-  onResolved: (score: number) => void;
-  onTimeRemainingChange: (seconds: number | undefined) => void;
-  onGuessInProgressChange: (inProgress: boolean) => void;
-}
+  onResolved: (score: number) => void; // eslint-disable-line no-unused-vars
+  onTimeRemainingChange: Dispatch<SetStateAction<number | undefined>>;
+  onGuessInProgressChange: Dispatch<SetStateAction<boolean>>;
+};
 
 export function useGuessScheduler({
   userId,
@@ -40,7 +41,7 @@ export function useGuessScheduler({
           if (result?.isResolved) {
             onResolved(result.score ?? 0);
             onGuessInProgressChange(false);
-            onTimeRemainingChange();
+            onTimeRemainingChange(undefined); // eslint-disable-line unicorn/no-useless-undefined
           } else {
             // Still not resolved, check again after 1 second
             onTimeRemainingChange(0);
@@ -49,7 +50,7 @@ export function useGuessScheduler({
               if (retryResult?.isResolved) {
                 onResolved(retryResult.score ?? 0);
                 onGuessInProgressChange(false);
-                onTimeRemainingChange();
+                onTimeRemainingChange(undefined); // eslint-disable-line unicorn/no-useless-undefined
               } else {
                 timeoutReference.current = setTimeout(retryCheck, 1000);
               }
